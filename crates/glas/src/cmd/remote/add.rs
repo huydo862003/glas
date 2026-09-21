@@ -40,3 +40,49 @@ fn parse_remote_url(url: &str) -> anyhow::Result<(String, String)> {
 
   Ok((base.to_string(), user.to_string()))
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn parse_https_url() {
+    let (base, user) = parse_remote_url("https://github.com/myorg").unwrap();
+    assert_eq!(base, "https://github.com");
+    assert_eq!(user, "myorg");
+  }
+
+  #[test]
+  fn parse_http_url() {
+    let (base, user) = parse_remote_url("http://gitlab.local/team").unwrap();
+    assert_eq!(base, "http://gitlab.local");
+    assert_eq!(user, "team");
+  }
+
+  #[test]
+  fn parse_url_with_trailing_slash() {
+    let (base, user) = parse_remote_url("https://github.com/myorg/").unwrap();
+    assert_eq!(base, "https://github.com");
+    assert_eq!(user, "myorg");
+  }
+
+  #[test]
+  fn reject_ftp_scheme() {
+    assert!(parse_remote_url("ftp://github.com/myorg").is_err());
+  }
+
+  #[test]
+  fn reject_no_scheme() {
+    assert!(parse_remote_url("github.com/myorg").is_err());
+  }
+
+  #[test]
+  fn reject_no_user() {
+    assert!(parse_remote_url("https://github.com").is_err());
+  }
+
+  #[test]
+  fn reject_empty() {
+    assert!(parse_remote_url("").is_err());
+  }
+}

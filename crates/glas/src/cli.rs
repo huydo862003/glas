@@ -32,6 +32,18 @@ pub enum Command {
 
   /// Show workspace overview
   Status,
+
+  /// Generate shell completions
+  Completions(CompletionsArgs),
+
+  /// Generate man page
+  Manpage,
+}
+
+#[derive(clap::Args)]
+pub struct CompletionsArgs {
+  /// Shell to generate completions for
+  pub shell: clap_complete::Shell,
 }
 
 #[derive(clap::Args)]
@@ -122,6 +134,8 @@ pub struct RepoRemoveArgs {
 pub struct RepoPrimaryArgs {
   /// Remote name
   pub remote: String,
+  /// Repo name (default: current directory name)
+  pub name: Option<String>,
   /// Override repo name on this remote (when it differs from local name)
   #[arg(long)]
   pub repo: Option<String>,

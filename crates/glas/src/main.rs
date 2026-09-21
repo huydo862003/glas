@@ -5,7 +5,7 @@ mod glas;
 mod logger;
 mod types;
 
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 
 use cli::{Cli, Command, RemoteCommand, RepoCommand};
 
@@ -29,6 +29,19 @@ fn main() -> anyhow::Result<()> {
     Command::Push(args) => cmd::push::run(args)?,
     Command::Pull(args) => cmd::pull::run(args)?,
     Command::Status => cmd::status::run()?,
+    Command::Completions(args) => {
+      clap_complete::generate(
+        args.shell,
+        &mut Cli::command(),
+        "glas",
+        &mut std::io::stdout(),
+      );
+    }
+    Command::Manpage => {
+      let cmd = Cli::command();
+      let man = clap_mangen::Man::new(cmd);
+      man.render(&mut std::io::stdout())?;
+    }
   }
 
   Ok(())

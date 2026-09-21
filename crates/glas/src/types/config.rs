@@ -273,3 +273,80 @@ impl PartialEq<&str> for GitRepositoryName {
     self.0 == *other
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn parse_known_providers() {
+    assert!(matches!("github".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::GitHub));
+    assert!(matches!("gitlab".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::GitLab));
+    assert!(matches!("bitbucket".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::Bitbucket));
+    assert!(matches!("gitea".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::Gitea));
+    assert!(matches!("forgejo".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::Forgejo));
+  }
+
+  #[test]
+  fn parse_custom_provider() {
+    assert!(matches!("codeberg".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::Other(_)));
+  }
+
+  #[test]
+  fn reject_empty_provider() {
+    assert!("".parse::<GitRemoteProvider>().is_err());
+  }
+
+  #[test]
+  fn reject_provider_with_dot() {
+    assert!("my.remote".parse::<GitRemoteProvider>().is_err());
+  }
+
+  #[test]
+  fn reject_provider_with_slash() {
+    assert!("my/remote".parse::<GitRemoteProvider>().is_err());
+  }
+
+  #[test]
+  fn parse_valid_repo_name() {
+    assert!("my-repo".parse::<GitRepositoryName>().is_ok());
+    assert!("repo_123".parse::<GitRepositoryName>().is_ok());
+  }
+
+  #[test]
+  fn reject_empty_repo_name() {
+    assert!("".parse::<GitRepositoryName>().is_err());
+  }
+
+  #[test]
+  fn reject_repo_name_with_slash() {
+    assert!("org/repo".parse::<GitRepositoryName>().is_err());
+  }
+
+  #[test]
+  fn parse_valid_username() {
+    assert!("myorg".parse::<GitUserName>().is_ok());
+    assert!("my-org_123".parse::<GitUserName>().is_ok());
+  }
+
+  #[test]
+  fn reject_empty_username() {
+    assert!("".parse::<GitUserName>().is_err());
+  }
+
+  #[test]
+  fn reject_username_with_slash() {
+    assert!("org/team".parse::<GitUserName>().is_err());
+  }
+
+  #[test]
+  fn parse_valid_url() {
+    assert!("https://github.com".parse::<GitRemoteUrl>().is_ok());
+    assert!("http://localhost:3000".parse::<GitRemoteUrl>().is_ok());
+  }
+
+  #[test]
+  fn reject_empty_url() {
+    assert!("".parse::<GitRemoteUrl>().is_err());
+  }
+}

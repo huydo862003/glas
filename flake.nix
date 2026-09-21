@@ -45,7 +45,7 @@
           ];
           nativeBuildInputs = with pkgs; [ pkg-config ];
           buildInputs = with pkgs; [ openssl ];
-          doCheck = false;
+          doCheck = true;
         };
       in
       {

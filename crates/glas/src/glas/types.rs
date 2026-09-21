@@ -66,3 +66,72 @@ pub struct RawSecretsFile {
 pub struct RawRemoteSecret {
   pub token: Option<String>,
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn parse_minimal_config() {
+    let toml = "";
+    let config: RawWorkspaceConfig = toml::from_str(toml).unwrap();
+    assert!(config.remotes.is_empty());
+    assert!(config.repo.is_empty());
+  }
+
+  #[test]
+  fn parse_config_with_remote() {
+    let toml = r#"
+[remotes.github]
+url = "https://github.com"
+user = "myorg"
+"#;
+    let config: RawWorkspaceConfig = toml::from_str(toml).unwrap();
+    assert_eq!(config.remotes["github"].url, "https://github.com");
+    assert_eq!(config.remotes["github"].user, "myorg");
+  }
+
+  #[test]
+  fn parse_config_with_repo_and_primary() {
+    let toml = r#"
+[remotes.github]
+url = "https://github.com"
+user = "myorg"
+
+[repo.myapp]
+primary = { name = "github" }
+"#;
+    let config: RawWorkspaceConfig = toml::from_str(toml).unwrap();
+    let repo = &config.repo["myapp"];
+    assert_eq!(repo.primary.as_ref().unwrap().name, "github");
+  }
+
+  #[test]
+  fn reject_unknown_fields_in_remote() {
+    let toml = r#"
+[remotes.github]
+url = "https://github.com"
+user = "myorg"
+extra = "bad"
+"#;
+    assert!(toml::from_str::<RawWorkspaceConfig>(toml).is_err());
+  }
+
+  #[test]
+  fn reject_unknown_fields_at_root() {
+    let toml = r#"
+unknown_key = "bad"
+"#;
+    assert!(toml::from_str::<RawWorkspaceConfig>(toml).is_err());
+  }
+
+  #[test]
+  fn parse_secrets_file() {
+    let toml = r#"
+[remotes.github]
+token = "ghp_xxx"
+"#;
+    let secrets: RawSecretsFile = toml::from_str(toml).unwrap();
+    assert_eq!(secrets.remotes["github"].token.as_deref(), Some("ghp_xxx"));
+  }
+}
