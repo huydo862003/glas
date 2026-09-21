@@ -18,7 +18,7 @@ pub fn run() -> anyhow::Result<()> {
   } else {
     println!("remotes:");
     for remote in &config.remotes {
-      let token_status = if remote.cred.read().is_ok() { "token: set" } else { "token: missing" };
+      let token_status = if remote.cred.read().is_ok() { "token: set" } else { "token: not set" };
       println!("  {}  {}/{}  {}", remote.name, remote.url, remote.user, token_status);
     }
   }

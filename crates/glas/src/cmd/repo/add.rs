@@ -37,8 +37,10 @@ pub fn run(args: RepoAddArgs) -> anyhow::Result<()> {
 
   // Symlink if the repo lives outside the workspace
   if source_path != repo_path {
-    if repo_path.exists() || repo_path.is_symlink() {
+    if repo_path.is_symlink() {
       std::fs::remove_file(&repo_path)?;
+    } else if repo_path.exists() {
+      anyhow::bail!("{} already exists and is not a symlink", repo_path.display());
     }
     create_symlink(&source_path, &repo_path)?;
     logger::print_info(&format!("symlinked {name} to {}", source_path.display()));

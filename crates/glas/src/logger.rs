@@ -24,7 +24,7 @@ pub fn create_progress_bar(len: u64) -> ProgressBar {
   let progress = ProgressBar::new(len);
   progress.set_style(
     ProgressStyle::with_template("{bar:30} {pos}/{len} {msg}")
-      .unwrap()
+      .expect("valid template")
       .progress_chars("=> "),
   );
   progress
