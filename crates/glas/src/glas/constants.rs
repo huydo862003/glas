@@ -17,8 +17,8 @@ pub const CONFIG_HEADER: &str = r#"# glas workspace config
 # repo = "glas"           # name of the .glas/ meta-repo on remotes
 #
 # [remotes.<name>]          # declare a hosting provider (name = provider, e.g. github)
-# url  = "https://github.com"
-# user = "myorg"            # default user/org for all repos on this remote
+# url  = "https://github.com"  # base URL (parsed from https://github.com/myorg)
+# user = "myorg"               # default user/org on this remote
 #
 # [repo.<name>]             # track a repo in this workspace
 # [repo.<name>.primary]     # remote to pull from

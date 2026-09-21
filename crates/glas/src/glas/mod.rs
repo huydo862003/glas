@@ -151,55 +151,6 @@ hint: run `glas init` to create one"#
     Ok(())
   }
 
-  /// Add a push remote on a repo
-  pub fn add_repo_remote(
-    &mut self,
-    repo_name: &str,
-    remote_name: String,
-    repo_override: Option<String>,
-    user_override: Option<String>,
-    force: bool,
-  ) -> anyhow::Result<()> {
-    if !self.config.remotes.contains_key(&remote_name) {
-      anyhow::bail!("remote '{remote_name}' not found - add it with `glas remote add`");
-    }
-
-    let repo = self
-      .config
-      .repo
-      .get_mut(repo_name)
-      .ok_or_else(|| anyhow::anyhow!("repo '{repo_name}' is not tracked"))?;
-
-    if !force && repo.remotes.iter().any(|existing| existing.name == remote_name) {
-      anyhow::bail!("remote '{remote_name}' is already set on repo '{repo_name}'");
-    }
-    repo.remotes.retain(|existing| existing.name != remote_name);
-    repo.remotes.push(RawGitRemote {
-      name: remote_name,
-      repo: repo_override,
-      user: user_override,
-    });
-    Ok(())
-  }
-
-  /// Remove a push remote from a repo
-  pub fn remove_repo_remote(&mut self, repo_name: &str, remote_name: &str) -> anyhow::Result<()> {
-    let repo = self
-      .config
-      .repo
-      .get_mut(repo_name)
-      .ok_or_else(|| anyhow::anyhow!("repo '{repo_name}' is not tracked"))?;
-
-    let before = repo.remotes.len();
-    repo.remotes.retain(|existing| existing.name != remote_name);
-
-    if repo.remotes.len() == before {
-      // No change means the remote was never listed
-      anyhow::bail!("remote '{remote_name}' not found on repo '{repo_name}'");
-    }
-    Ok(())
-  }
-
   /// Set which remote is used as the pull source for a repo
   pub fn set_repo_primary(
     &mut self,
@@ -227,14 +178,30 @@ hint: run `glas init` to create one"#
     Ok(())
   }
 
-  /// Write a token for a remote to the global secrets file (shared across workspaces)
-  pub fn write_global_token(&self, remote_name: &str, token: String) -> anyhow::Result<()> {
+  /// Write a remote definition and optional token to global config (~/.config/glas/)
+  pub fn write_global_remote(&self, name: &str, url: String, user: String, token: Option<String>) -> anyhow::Result<()> {
     let Some(home) = std::env::var("HOME").ok().map(PathBuf::from) else {
       anyhow::bail!("HOME is not set");
     };
     let dir = home.join(GLOBAL_CONFIG_SUBDIR);
-    let path = dir.join(GLOBAL_SECRETS_FILE);
-    self.write_token_to(&path, remote_name, token)
+    fs::create_dir_all(&dir)?;
+
+    // Read or create global config, insert the remote
+    let config_path = dir.join(CONFIG_FILE);
+    let mut config: RawWorkspaceConfig = if config_path.exists() {
+      toml::from_str(&fs::read_to_string(&config_path)?)?
+    } else {
+      RawWorkspaceConfig::default()
+    };
+    config.remotes.insert(name.to_string(), RawRemoteConfig { url, user });
+    fs::write(&config_path, format!("{CONFIG_HEADER}{}", toml::to_string_pretty(&config)?))?;
+
+    if let Some(token) = token {
+      let secrets_path = dir.join(GLOBAL_SECRETS_FILE);
+      self.write_token_to(&secrets_path, name, token)?;
+    }
+
+    Ok(())
   }
 
   /// Write a token for a global remote to the workspace-local secrets file

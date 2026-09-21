@@ -1,4 +1,4 @@
-//! glas repo rm
+//! glas repo remove
 //! Stop tracking a repo
 
 use crate::glas::Workspace;

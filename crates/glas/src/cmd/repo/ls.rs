@@ -1,4 +1,4 @@
-//! glas repo ls
+//! glas repo list
 //! List all tracked repos and their remotes
 
 use crate::glas::Workspace;

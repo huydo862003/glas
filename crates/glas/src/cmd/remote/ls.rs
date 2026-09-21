@@ -1,4 +1,4 @@
-//! glas remote ls
+//! glas remote list
 //! List all configured remotes
 
 use crate::glas::Workspace;

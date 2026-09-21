@@ -3,23 +3,16 @@
 
 use std::path::{Path, PathBuf};
 
-use bitflags::bitflags;
-
+use crate::cli::RepoAddArgs;
 use crate::git;
 use crate::glas::Workspace;
 use crate::logger;
 
-bitflags! {
-  pub struct Flags: u32 {
-    const FORCE = 1 << 0;
-  }
-}
-
-pub fn run(path: Option<String>, flags: Flags) -> anyhow::Result<()> {
+pub fn run(args: RepoAddArgs) -> anyhow::Result<()> {
   let mut workspace = Workspace::load()?;
   let root = workspace.root().to_path_buf();
 
-  let (name, source_path) = match path {
+  let (name, source_path) = match args.path {
     Some(path) => {
       let source = PathBuf::from(&path).canonicalize()?;
       let name = source
@@ -51,7 +44,7 @@ pub fn run(path: Option<String>, flags: Flags) -> anyhow::Result<()> {
     logger::print_info(&format!("symlinked {name} to {}", source_path.display()));
   }
 
-  workspace.add_repo(name.clone(), flags.contains(Flags::FORCE))?;
+  workspace.add_repo(name.clone(), args.force)?;
   workspace.save()?;
 
   logger::print_ok(&format!("tracking '{name}'"));

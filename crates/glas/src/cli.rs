@@ -14,9 +14,9 @@ pub struct Cli {
 #[derive(Subcommand)]
 pub enum Command {
   /// Initialize a glas workspace in the current directory
-  Init,
+  Init(InitArgs),
 
-  /// Manage remotes
+  /// Manage shared remote definitions
   #[command(subcommand)]
   Remote(RemoteCommand),
 
@@ -24,111 +24,109 @@ pub enum Command {
   #[command(subcommand)]
   Repo(RepoCommand),
 
-  /// Push all tracked repos to all their remotes
-  Push,
+  /// Push tracked repos to their remotes
+  Push(PushArgs),
 
-  /// Pull all tracked repos from their primary remote
-  Pull,
+  /// Pull tracked repos from their primary remote
+  Pull(PullArgs),
+}
+
+#[derive(clap::Args)]
+pub struct InitArgs {
+  /// Name of the meta-repo on remotes
+  #[arg(long, default_value = "glas")]
+  pub meta_repo: String,
+}
+
+#[derive(clap::Args)]
+pub struct PushArgs {
+  /// Push only this repo (default: all)
+  pub repo: Option<String>,
+}
+
+#[derive(clap::Args)]
+pub struct PullArgs {
+  /// Pull only this repo (default: all)
+  pub repo: Option<String>,
 }
 
 #[derive(Subcommand)]
 pub enum RemoteCommand {
   /// Add a remote
-  Add {
-    /// Remote name (e.g. github, gitlab, bitbucket)
-    name: String,
-    /// Base URL (e.g. https://github.com)
-    url: String,
-    /// Username or organization on this remote
-    user: String,
-    /// Auth token (optional, stored in secrets.toml)
-    #[arg(long)]
-    token: Option<String>,
-    /// Overwrite if the remote already exists
-    #[arg(long)]
-    force: bool,
-  },
+  Add(RemoteAddArgs),
 
   /// List configured remotes
-  Ls,
+  List,
 
   /// Remove a remote
-  Rm {
-    /// Remote name to remove
-    name: String,
-  },
+  Remove(RemoteRemoveArgs),
+}
+
+#[derive(clap::Args)]
+pub struct RemoteAddArgs {
+  /// Remote name (e.g. github, gitlab, bitbucket)
+  pub name: String,
+  /// URL with user/org (e.g. https://github.com/myorg)
+  pub url: String,
+  /// Auth token (optional, stored in secrets.toml)
+  #[arg(long)]
+  pub token: Option<String>,
+  /// Store remote and token in global config (~/.config/glas/)
+  #[arg(long)]
+  pub global: bool,
+  /// Overwrite if the remote already exists
+  #[arg(long)]
+  pub force: bool,
+}
+
+#[derive(clap::Args)]
+pub struct RemoteRemoveArgs {
+  /// Remote name to remove
+  pub name: String,
 }
 
 #[derive(Subcommand)]
 pub enum RepoCommand {
   /// Track a repo (defaults to current directory)
-  Add {
-    /// Path to a local git repo outside the workspace
-    path: Option<String>,
-    /// Overwrite if the repo is already tracked
-    #[arg(long)]
-    force: bool,
-  },
+  Add(RepoAddArgs),
 
   /// Stop tracking the current directory as a repo
-  Rm,
+  Remove,
 
   /// List all tracked repos
-  Ls,
+  List,
 
   /// Show git status of all tracked repos
   Status,
-
-  /// Manage remotes for a tracked repo
-  #[command(subcommand)]
-  Remote(RepoRemoteCommand),
 
   /// Set repo properties
   #[command(subcommand)]
   Set(RepoSetCommand),
 }
 
-#[derive(Subcommand)]
-pub enum RepoRemoteCommand {
-  /// Add a remote to the current repo
-  Add {
-    /// Remote name
-    remote: String,
-    /// Custom repo name on this remote
-    #[arg(long)]
-    repo: Option<String>,
-    /// Custom user on this remote
-    #[arg(long)]
-    user: Option<String>,
-    /// Set as primary source
-    #[arg(long)]
-    primary: bool,
-    /// Overwrite if the remote is already set on this repo
-    #[arg(long)]
-    force: bool,
-  },
-
-  /// Remove a remote from the current repo
-  Rm {
-    /// Remote name
-    remote: String,
-  },
-
-  /// List remotes for the current repo
-  Ls,
+#[derive(clap::Args)]
+pub struct RepoAddArgs {
+  /// Path to a local git repo outside the workspace
+  pub path: Option<String>,
+  /// Overwrite if the repo is already tracked
+  #[arg(long)]
+  pub force: bool,
 }
 
 #[derive(Subcommand)]
 pub enum RepoSetCommand {
   /// Set the primary remote for the current repo
-  Primary {
-    /// Remote name
-    remote: String,
-    /// Custom repo name on this remote
-    #[arg(long)]
-    repo: Option<String>,
-    /// Custom user on this remote
-    #[arg(long)]
-    user: Option<String>,
-  },
+  Primary(RepoSetPrimaryArgs),
+}
+
+#[derive(clap::Args)]
+pub struct RepoSetPrimaryArgs {
+  /// Remote name
+  pub remote: String,
+  /// Custom repo name on this remote
+  #[arg(long)]
+  pub repo: Option<String>,
+  /// Custom user on this remote
+  #[arg(long)]
+  pub user: Option<String>,
 }

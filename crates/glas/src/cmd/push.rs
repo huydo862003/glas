@@ -1,14 +1,15 @@
 //! glas push
-//! Push all tracked repos and the meta-repo to their remotes
+//! Push tracked repos and the meta-repo to their remotes
 
 use std::path::Path;
 
+use crate::cli::PushArgs;
 use crate::git;
 use crate::glas::Workspace;
 use crate::logger;
 use crate::types::GitRemote;
 
-pub fn run() -> anyhow::Result<()> {
+pub fn run(args: PushArgs) -> anyhow::Result<()> {
   let workspace = Workspace::load()?;
   let config = workspace.config();
 
@@ -17,11 +18,20 @@ pub fn run() -> anyhow::Result<()> {
     return Ok(());
   }
 
-  let total = config.repos.len() as u64 + 1;
-  let progress = logger::create_progress_bar(total);
+  let repos: Vec<_> = match &args.repo {
+    Some(filter) => {
+      let repo = config.find_repo(filter)
+        .ok_or_else(|| anyhow::anyhow!("repo '{filter}' is not tracked"))?;
+      vec![repo]
+    }
+    None => config.repos.iter().collect(),
+  };
 
-  // Push each tracked repo to its remotes
-  for repo in &config.repos {
+  let total = repos.len() as u64 + if args.repo.is_none() { 1 } else { 0 };
+  let progress = logger::create_progress_bar(total);
+  let mut errors: Vec<String> = Vec::new();
+
+  for repo in &repos {
     progress.set_message(repo.name.to_string());
 
     if !repo.path.exists() {
@@ -30,19 +40,27 @@ pub fn run() -> anyhow::Result<()> {
       continue;
     }
 
-    push_remotes(&repo.name, &repo.push_remotes, &repo.path)?;
+    if let Err(err) = push_remotes(&repo.name, &repo.push_remotes, &repo.path) {
+      logger::print_error(&format!("{}: {err}", repo.name));
+      errors.push(repo.name.to_string());
+    }
     progress.inc(1);
   }
 
-  // Push the meta-repo itself
-  progress.set_message("meta-repo");
-  push_remotes(
-    &config.meta.name,
-    &config.meta.push_remotes,
-    &config.meta.path,
-  )?;
-  progress.inc(1);
+  // Push the meta-repo when syncing all repos
+  if args.repo.is_none() {
+    progress.set_message("meta-repo");
+    if let Err(err) = push_remotes(&config.meta.name, &config.meta.push_remotes, &config.meta.path) {
+      logger::print_error(&format!("{}: {err}", config.meta.name));
+      errors.push(config.meta.name.to_string());
+    }
+    progress.inc(1);
+  }
   progress.finish_and_clear();
+
+  if !errors.is_empty() {
+    anyhow::bail!("push failed for: {}", errors.join(", "));
+  }
 
   Ok(())
 }

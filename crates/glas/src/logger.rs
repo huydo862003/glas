@@ -11,6 +11,10 @@ pub fn print_skip(message: &str) {
   println!("{} {}", "skip".yellow(), message);
 }
 
+pub fn print_error(message: &str) {
+  eprintln!("{} {}", "error".red(), message);
+}
+
 pub fn print_info(message: &str) {
   println!("{message}");
 }
