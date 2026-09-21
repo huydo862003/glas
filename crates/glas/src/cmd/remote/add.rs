@@ -34,7 +34,7 @@ fn parse_remote_url(url: &str) -> anyhow::Result<(String, String)> {
     anyhow::bail!("invalid remote URL '{url}': expected https://host/user");
   }
 
-  if !base.contains("://") {
+  if !base.starts_with("https://") && !base.starts_with("http://") {
     anyhow::bail!("invalid remote URL '{url}': expected https://host/user");
   }
 

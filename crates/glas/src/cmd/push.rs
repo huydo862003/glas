@@ -40,6 +40,12 @@ pub fn run(args: PushArgs) -> anyhow::Result<()> {
       continue;
     }
 
+    if repo.push_remotes.is_empty() {
+      logger::print_skip(&format!("{}: no remotes configured", repo.name));
+      progress.inc(1);
+      continue;
+    }
+
     if let Err(err) = push_remotes(&repo.name, &repo.push_remotes, &repo.path) {
       logger::print_error(&format!("{}: {err}", repo.name));
       errors.push(repo.name.to_string());

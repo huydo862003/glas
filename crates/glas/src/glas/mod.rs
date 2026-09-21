@@ -95,8 +95,9 @@ hint: run `glas init` to create one"#
       .ok_or_else(|| anyhow::anyhow!("could not determine repo name from current directory"))
   }
 
-  /// Register a new global remote
+  /// Register a new remote, validating name upfront
   pub fn add_remote(&mut self, name: String, url: String, user: String, force: bool) -> anyhow::Result<()> {
+    name.parse::<crate::types::GitRemoteProvider>()?;
     if !force && self.config.remotes.contains_key(&name) {
       anyhow::bail!("remote '{name}' already exists");
     }
@@ -243,7 +244,11 @@ hint: run `glas init` to create one"#
     if let Some(parent) = path.parent() {
       fs::create_dir_all(parent)?;
     }
-    fs::write(path, format!("{CONFIG_HEADER}{}", toml::to_string_pretty(&self.config)?))?;
+    // Write to temp file then rename for atomic save
+    let content = format!("{CONFIG_HEADER}{}", toml::to_string_pretty(&self.config)?);
+    let tmp = path.with_extension("tmp");
+    fs::write(&tmp, &content)?;
+    fs::rename(&tmp, &path)?;
     Ok(())
   }
 }

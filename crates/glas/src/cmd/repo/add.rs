@@ -14,7 +14,13 @@ pub fn run(args: RepoAddArgs) -> anyhow::Result<()> {
 
   let (name, source_path) = match args.path {
     Some(path) => {
-      let source = PathBuf::from(&path).canonicalize()?;
+      let raw = PathBuf::from(&path);
+      // Use canonicalize if path exists, otherwise resolve manually
+      let source = if raw.exists() {
+        raw.canonicalize()?
+      } else {
+        std::env::current_dir()?.join(&raw)
+      };
       let name = source
         .file_name()
         .and_then(|file_name| file_name.to_str())
@@ -28,6 +34,10 @@ pub fn run(args: RepoAddArgs) -> anyhow::Result<()> {
       (name, source)
     }
   };
+
+  if name == ".glas" {
+    anyhow::bail!("cannot track '.glas' as a repo (reserved for workspace config)");
+  }
 
   let repo_path = root.join(&name);
 

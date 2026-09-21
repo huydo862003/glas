@@ -68,3 +68,7 @@ Remote definitions are stored in the workspace config. Tokens are always stored 
 2. Global secrets file `~/.config/glas/secrets.toml`
 3. Git config `glas.remote.<name>.token`
 4. Provider CLI tool (gh, glab, tea, bb)
+
+## Known limitations
+
+- On Unix, secrets files are created with mode 0600. On Windows, file permissions are not enforced - use environment variables for sensitive tokens instead.
