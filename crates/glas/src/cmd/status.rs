@@ -18,8 +18,15 @@ pub fn run() -> anyhow::Result<()> {
   } else {
     println!("remotes:");
     for remote in &config.remotes {
-      let token_status = if remote.cred.read().is_ok() { "token: set" } else { "token: not set" };
-      println!("  {}  {}/{}  {}", remote.name, remote.url, remote.user, token_status);
+      let token_status = if remote.cred.read().is_ok() {
+        "token: set"
+      } else {
+        "token: not set"
+      };
+      println!(
+        "  {}  {}/{}  {}",
+        remote.name, remote.url, remote.user, token_status
+      );
     }
   }
   println!();
@@ -30,12 +37,17 @@ pub fn run() -> anyhow::Result<()> {
   } else {
     println!("repos:");
     for repo in &config.repos {
-      let primary_label = repo.primary.as_ref()
+      let primary_label = repo
+        .primary
+        .as_ref()
         .map(|primary| primary.name.to_string())
         .unwrap_or_else(|| "(no primary)".to_string());
 
       if !repo.path.exists() {
-        logger::print_skip(&format!("  {}  primary={}  not cloned", repo.name, primary_label));
+        logger::print_skip(&format!(
+          "  {}  primary={}  not cloned",
+          repo.name, primary_label
+        ));
         continue;
       }
 
@@ -44,7 +56,10 @@ pub fn run() -> anyhow::Result<()> {
         Ok(false) => "clean",
         Err(_) => "unknown",
       };
-      println!("  {}  primary={}  {}", repo.name, primary_label, dirty_label);
+      println!(
+        "  {}  primary={}  {}",
+        repo.name, primary_label, dirty_label
+      );
     }
   }
 

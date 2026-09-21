@@ -71,7 +71,9 @@ pub fn pull(repo_path: &Path, remote_name: &str, cred: &Credential) -> anyhow::R
   }
 
   // Fast-forward the current branch
-  let head = repo.head().map_err(|err| anyhow::anyhow!("no HEAD: {err}"))?;
+  let head = repo
+    .head()
+    .map_err(|err| anyhow::anyhow!("no HEAD: {err}"))?;
   let branch_name = head
     .shorthand()
     .ok_or_else(|| anyhow::anyhow!("HEAD is not a named branch"))?

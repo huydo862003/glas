@@ -50,7 +50,10 @@ pub fn run(args: RepoAddArgs) -> anyhow::Result<()> {
     if repo_path.is_symlink() {
       std::fs::remove_file(&repo_path)?;
     } else if repo_path.exists() {
-      anyhow::bail!("{} already exists and is not a symlink", repo_path.display());
+      anyhow::bail!(
+        "{} already exists and is not a symlink",
+        repo_path.display()
+      );
     }
     create_symlink(&source_path, &repo_path)?;
     logger::print_info(&format!("symlinked {name} to {}", source_path.display()));

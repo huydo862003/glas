@@ -30,7 +30,13 @@ impl Credential {
     key: String,
     env_var: Option<String>,
   ) -> Self {
-    Credential { provider, secrets_path, global_secrets_path, key, env_var }
+    Credential {
+      provider,
+      secrets_path,
+      global_secrets_path,
+      key,
+      env_var,
+    }
   }
 
   /// Ensure the repo exists on the provider, creating it if absent

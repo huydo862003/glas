@@ -20,7 +20,8 @@ pub fn run(args: PushArgs) -> anyhow::Result<()> {
 
   let repos: Vec<_> = match &args.repo {
     Some(filter) => {
-      let repo = config.find_repo(filter)
+      let repo = config
+        .find_repo(filter)
         .ok_or_else(|| anyhow::anyhow!("repo '{filter}' is not tracked"))?;
       vec![repo]
     }
@@ -56,7 +57,11 @@ pub fn run(args: PushArgs) -> anyhow::Result<()> {
   // Push the meta-repo when syncing all repos
   if args.repo.is_none() {
     progress.set_message("meta-repo");
-    if let Err(err) = push_remotes(&config.meta.name, &config.meta.push_remotes, &config.meta.path) {
+    if let Err(err) = push_remotes(
+      &config.meta.name,
+      &config.meta.push_remotes,
+      &config.meta.path,
+    ) {
       logger::print_error(&format!("{}: {err}", config.meta.name));
       errors.push(config.meta.name.to_string());
     }

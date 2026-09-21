@@ -4,7 +4,7 @@ use std::fs;
 
 use serde::Deserialize;
 
-use super::{home_dir, GitProvider};
+use super::{GitProvider, home_dir};
 
 pub struct Gitea {
   pub base_url: String,

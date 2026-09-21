@@ -278,75 +278,106 @@ impl PartialEq<&str> for GitRepositoryName {
 mod tests {
   use super::*;
 
+  // Known provider names map to their enum variants
   #[test]
-  fn parse_known_providers() {
-    assert!(matches!("github".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::GitHub));
-    assert!(matches!("gitlab".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::GitLab));
-    assert!(matches!("bitbucket".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::Bitbucket));
-    assert!(matches!("gitea".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::Gitea));
-    assert!(matches!("forgejo".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::Forgejo));
+  fn known_provider_names_parse_to_variants() {
+    assert!(matches!(
+      "github".parse::<GitRemoteProvider>().unwrap(),
+      GitRemoteProvider::GitHub
+    ));
+    assert!(matches!(
+      "gitlab".parse::<GitRemoteProvider>().unwrap(),
+      GitRemoteProvider::GitLab
+    ));
+    assert!(matches!(
+      "bitbucket".parse::<GitRemoteProvider>().unwrap(),
+      GitRemoteProvider::Bitbucket
+    ));
+    assert!(matches!(
+      "gitea".parse::<GitRemoteProvider>().unwrap(),
+      GitRemoteProvider::Gitea
+    ));
+    assert!(matches!(
+      "forgejo".parse::<GitRemoteProvider>().unwrap(),
+      GitRemoteProvider::Forgejo
+    ));
   }
 
+  // Unknown names become Other variant (for self-hosted providers)
   #[test]
-  fn parse_custom_provider() {
-    assert!(matches!("codeberg".parse::<GitRemoteProvider>().unwrap(), GitRemoteProvider::Other(_)));
+  fn unknown_provider_name_becomes_other() {
+    assert!(matches!(
+      "codeberg".parse::<GitRemoteProvider>().unwrap(),
+      GitRemoteProvider::Other(_)
+    ));
   }
 
+  // Provider name must not be empty
   #[test]
-  fn reject_empty_provider() {
+  fn empty_provider_name_is_rejected() {
     assert!("".parse::<GitRemoteProvider>().is_err());
   }
 
+  // Dots are forbidden in provider names (would break git config keys)
   #[test]
-  fn reject_provider_with_dot() {
+  fn provider_name_with_dot_is_rejected() {
     assert!("my.remote".parse::<GitRemoteProvider>().is_err());
   }
 
+  // Slashes are forbidden in provider names (would break URL construction)
   #[test]
-  fn reject_provider_with_slash() {
+  fn provider_name_with_slash_is_rejected() {
     assert!("my/remote".parse::<GitRemoteProvider>().is_err());
   }
 
+  // Repo names with hyphens and underscores are valid
   #[test]
-  fn parse_valid_repo_name() {
+  fn repo_names_with_hyphens_and_underscores_are_valid() {
     assert!("my-repo".parse::<GitRepositoryName>().is_ok());
     assert!("repo_123".parse::<GitRepositoryName>().is_ok());
   }
 
+  // Repo name must not be empty
   #[test]
-  fn reject_empty_repo_name() {
+  fn empty_repo_name_is_rejected() {
     assert!("".parse::<GitRepositoryName>().is_err());
   }
 
+  // Slashes are forbidden in repo names (would create subdirectories)
   #[test]
-  fn reject_repo_name_with_slash() {
+  fn repo_name_with_slash_is_rejected() {
     assert!("org/repo".parse::<GitRepositoryName>().is_err());
   }
 
+  // Usernames with hyphens and underscores are valid
   #[test]
-  fn parse_valid_username() {
+  fn usernames_with_hyphens_and_underscores_are_valid() {
     assert!("myorg".parse::<GitUserName>().is_ok());
     assert!("my-org_123".parse::<GitUserName>().is_ok());
   }
 
+  // Username must not be empty
   #[test]
-  fn reject_empty_username() {
+  fn empty_username_is_rejected() {
     assert!("".parse::<GitUserName>().is_err());
   }
 
+  // Slashes are forbidden in usernames (would break URL construction)
   #[test]
-  fn reject_username_with_slash() {
+  fn username_with_slash_is_rejected() {
     assert!("org/team".parse::<GitUserName>().is_err());
   }
 
+  // Both https and http URLs are valid
   #[test]
-  fn parse_valid_url() {
+  fn https_and_http_urls_are_valid() {
     assert!("https://github.com".parse::<GitRemoteUrl>().is_ok());
     assert!("http://localhost:3000".parse::<GitRemoteUrl>().is_ok());
   }
 
+  // URL must not be empty
   #[test]
-  fn reject_empty_url() {
+  fn empty_url_is_rejected() {
     assert!("".parse::<GitRemoteUrl>().is_err());
   }
 }

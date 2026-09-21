@@ -58,64 +58,89 @@ fn validate_remote_list(
 #[cfg(test)]
 mod tests {
   use super::*;
+  use crate::glas::types::RawGitRepository;
 
   fn make_config(remotes: &[(&str, &str, &str)]) -> RawWorkspaceConfig {
     let mut config = RawWorkspaceConfig::default();
     for (name, url, user) in remotes {
       config.remotes.insert(
         name.to_string(),
-        RawRemoteConfig { url: url.to_string(), user: user.to_string() },
+        RawRemoteConfig {
+          url: url.to_string(),
+          user: user.to_string(),
+        },
       );
     }
     config
   }
 
+  // Empty config is valid (no remotes, no repos)
   #[test]
-  fn valid_empty_config() {
+  fn empty_config_is_valid() {
     assert!(validate_config(&RawWorkspaceConfig::default()).is_ok());
   }
 
+  // Config with one well-formed remote passes
   #[test]
-  fn valid_config_with_remote() {
+  fn single_remote_is_valid() {
     let config = make_config(&[("github", "https://github.com", "myorg")]);
     assert!(validate_config(&config).is_ok());
   }
 
+  // Remote name must not be empty
   #[test]
-  fn reject_empty_remote_name() {
+  fn empty_remote_name_is_rejected() {
     let config = make_config(&[("", "https://github.com", "myorg")]);
     assert!(validate_config(&config).is_err());
   }
 
+  // Remote URL must not be empty
   #[test]
-  fn reject_empty_url() {
+  fn empty_url_is_rejected() {
     let config = make_config(&[("github", "", "myorg")]);
     assert!(validate_config(&config).is_err());
   }
 
+  // Remote user must not be empty
   #[test]
-  fn reject_empty_user() {
+  fn empty_user_is_rejected() {
     let config = make_config(&[("github", "https://github.com", "")]);
     assert!(validate_config(&config).is_err());
   }
 
+  // Repo primary must reference an existing remote
   #[test]
-  fn reject_repo_with_missing_primary_remote() {
+  fn repo_primary_referencing_missing_remote_is_rejected() {
     let mut config = make_config(&[("github", "https://github.com", "myorg")]);
-    config.repo.insert("myrepo".to_string(), crate::glas::types::RawGitRepository {
-      primary: Some(RawGitRemote { name: "gitlab".to_string(), repo: None, user: None }),
-      remotes: vec![],
-    });
+    config.repo.insert(
+      "myrepo".to_string(),
+      RawGitRepository {
+        primary: Some(RawGitRemote {
+          name: "gitlab".to_string(),
+          repo: None,
+          user: None,
+        }),
+        remotes: vec![],
+      },
+    );
     assert!(validate_config(&config).is_err());
   }
 
+  // Repo primary referencing an existing remote passes
   #[test]
-  fn accept_repo_with_valid_primary() {
+  fn repo_primary_referencing_existing_remote_is_valid() {
     let mut config = make_config(&[("github", "https://github.com", "myorg")]);
-    config.repo.insert("myrepo".to_string(), crate::glas::types::RawGitRepository {
-      primary: Some(RawGitRemote { name: "github".to_string(), repo: None, user: None }),
-      remotes: vec![],
-    });
+    config.repo.insert(
+      "myrepo".to_string(),
+      RawGitRepository {
+        primary: Some(RawGitRemote {
+          name: "github".to_string(),
+          repo: None,
+          user: None,
+        }),
+        remotes: vec![],
+      },
+    );
     assert!(validate_config(&config).is_ok());
   }
 }

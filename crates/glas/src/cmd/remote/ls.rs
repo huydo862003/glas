@@ -14,12 +14,24 @@ pub fn run() -> anyhow::Result<()> {
   }
 
   for remote in &config.remotes {
-    let token_status = if remote.cred.read().is_ok() { "token: set" } else { "token: not set" };
+    let token_status = if remote.cred.read().is_ok() {
+      "token: set"
+    } else {
+      "token: not set"
+    };
 
-    let repo_names: Vec<&str> = config.repos.iter()
+    let repo_names: Vec<&str> = config
+      .repos
+      .iter()
       .filter(|repo| {
-        repo.primary.as_ref().is_some_and(|primary| primary.name == remote.name.as_str())
-          || repo.push_remotes.iter().any(|push| push.name == remote.name.as_str())
+        repo
+          .primary
+          .as_ref()
+          .is_some_and(|primary| primary.name == remote.name.as_str())
+          || repo
+            .push_remotes
+            .iter()
+            .any(|push| push.name == remote.name.as_str())
       })
       .map(|repo| repo.name.as_str())
       .collect();

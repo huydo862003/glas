@@ -23,9 +23,9 @@ pub fn run(args: RemoteAddArgs) -> anyhow::Result<()> {
 /// Parse "https://github.com/myorg" into ("https://github.com", "myorg")
 fn parse_remote_url(url: &str) -> anyhow::Result<(String, String)> {
   let trimmed = url.trim_end_matches('/');
-  let last_slash = trimmed.rfind('/').ok_or_else(|| {
-    anyhow::anyhow!("invalid remote URL '{url}': expected https://host/user")
-  })?;
+  let last_slash = trimmed
+    .rfind('/')
+    .ok_or_else(|| anyhow::anyhow!("invalid remote URL '{url}': expected https://host/user"))?;
 
   let base = &trimmed[..last_slash];
   let user = &trimmed[last_slash + 1..];
@@ -45,6 +45,7 @@ fn parse_remote_url(url: &str) -> anyhow::Result<(String, String)> {
 mod tests {
   use super::*;
 
+  // Splits https URL into base and user
   #[test]
   fn parse_https_url() {
     let (base, user) = parse_remote_url("https://github.com/myorg").unwrap();
@@ -52,6 +53,7 @@ mod tests {
     assert_eq!(user, "myorg");
   }
 
+  // Accepts http scheme for self-hosted instances
   #[test]
   fn parse_http_url() {
     let (base, user) = parse_remote_url("http://gitlab.local/team").unwrap();
@@ -59,6 +61,7 @@ mod tests {
     assert_eq!(user, "team");
   }
 
+  // Strips trailing slash before parsing
   #[test]
   fn parse_url_with_trailing_slash() {
     let (base, user) = parse_remote_url("https://github.com/myorg/").unwrap();
@@ -66,21 +69,25 @@ mod tests {
     assert_eq!(user, "myorg");
   }
 
+  // Only http and https schemes are allowed
   #[test]
   fn reject_ftp_scheme() {
     assert!(parse_remote_url("ftp://github.com/myorg").is_err());
   }
 
+  // Bare hostname without scheme is rejected
   #[test]
   fn reject_no_scheme() {
     assert!(parse_remote_url("github.com/myorg").is_err());
   }
 
+  // URL must include a user/org path segment
   #[test]
   fn reject_no_user() {
     assert!(parse_remote_url("https://github.com").is_err());
   }
 
+  // Empty string is not a valid URL
   #[test]
   fn reject_empty() {
     assert!(parse_remote_url("").is_err());

@@ -20,7 +20,8 @@ pub fn run(args: PullArgs) -> anyhow::Result<()> {
 
   let repos: Vec<_> = match &args.repo {
     Some(filter) => {
-      let repo = config.find_repo(filter)
+      let repo = config
+        .find_repo(filter)
         .ok_or_else(|| anyhow::anyhow!("repo '{filter}' is not tracked"))?;
       vec![repo]
     }
@@ -76,7 +77,12 @@ pub fn run(args: PullArgs) -> anyhow::Result<()> {
   Ok(())
 }
 
-fn pull_repo(name: &str, primary: &GitRemote, path: &Path, clone_if_missing: bool) -> anyhow::Result<()> {
+fn pull_repo(
+  name: &str,
+  primary: &GitRemote,
+  path: &Path,
+  clone_if_missing: bool,
+) -> anyhow::Result<()> {
   if clone_if_missing && !path.exists() {
     logger::print_info(&format!("{name}: cloning from {}...", primary.name));
     git::clone(&primary.url, path, &primary.cred)?;

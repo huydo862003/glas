@@ -1,8 +1,8 @@
 //! The `.glas/` workspace
 
+mod constants;
 pub mod cred;
 pub mod providers;
-mod constants;
 mod resolve;
 mod types;
 mod validate;
@@ -16,13 +16,12 @@ use std::path::{Path, PathBuf};
 
 use crate::git;
 use crate::glas::constants::{
-  CONFIG_FILE, CONFIG_HEADER, GLAS_DIR, GLAS_LOCAL_PATH, GLOBAL_CONFIG_SUBDIR,
-  GLOBAL_SECRETS_FILE, LOCAL_GITIGNORE, SECRETS_HEADER,
+  CONFIG_FILE, CONFIG_HEADER, GLAS_DIR, GLAS_LOCAL_PATH, GLOBAL_CONFIG_SUBDIR, GLOBAL_SECRETS_FILE,
+  LOCAL_GITIGNORE, SECRETS_HEADER,
 };
 use crate::glas::resolve::resolve_config;
 use crate::glas::types::{
-  RawGitRemote, RawRemoteConfig, RawSecretsFile, RawWorkspaceConfig,
-  RawWorkspaceMeta,
+  RawGitRemote, RawRemoteConfig, RawSecretsFile, RawWorkspaceConfig, RawWorkspaceMeta,
 };
 use crate::glas::validate::validate_config;
 use crate::types::WorkspaceConfig;
@@ -72,12 +71,20 @@ hint: run `glas init` to create one"#
 
     validate_config(&config)?; // Callers can assume the config is valid
 
-    Ok(Workspace { root, config, global_secrets_path })
+    Ok(Workspace {
+      root,
+      config,
+      global_secrets_path,
+    })
   }
 
   /// Resolve raw config into fully-computed paths and URLs
   pub fn config(&self) -> WorkspaceConfig {
-    resolve_config(&self.config, &self.root, self.global_secrets_path.as_deref())
+    resolve_config(
+      &self.config,
+      &self.root,
+      self.global_secrets_path.as_deref(),
+    )
   }
 
   /// Return the workspace root path
@@ -96,12 +103,21 @@ hint: run `glas init` to create one"#
   }
 
   /// Register a new remote, validating name upfront
-  pub fn add_remote(&mut self, name: String, url: String, user: String, force: bool) -> anyhow::Result<()> {
+  pub fn add_remote(
+    &mut self,
+    name: String,
+    url: String,
+    user: String,
+    force: bool,
+  ) -> anyhow::Result<()> {
     name.parse::<crate::types::GitRemoteProvider>()?;
     if !force && self.config.remotes.contains_key(&name) {
       anyhow::bail!("remote '{name}' already exists");
     }
-    self.config.remotes.insert(name, RawRemoteConfig { url, user });
+    self
+      .config
+      .remotes
+      .insert(name, RawRemoteConfig { url, user });
     Ok(())
   }
 
@@ -195,12 +211,19 @@ hint: run `glas init` to create one"#
       RawSecretsFile::default()
     };
 
-    secrets.remotes.entry(remote_name.to_string()).or_default().token = Some(token);
+    secrets
+      .remotes
+      .entry(remote_name.to_string())
+      .or_default()
+      .token = Some(token);
 
     if let Some(parent) = path.parent() {
       fs::create_dir_all(parent)?;
     }
-    write_secrets_file(path, &format!("{SECRETS_HEADER}{}", toml::to_string_pretty(&secrets)?))?;
+    write_secrets_file(
+      path,
+      &format!("{SECRETS_HEADER}{}", toml::to_string_pretty(&secrets)?),
+    )?;
     Ok(())
   }
 
@@ -229,7 +252,10 @@ hint: run `glas init` to create one"#
       },
       ..Default::default()
     };
-    fs::write(&config_path, format!("{CONFIG_HEADER}{}", toml::to_string_pretty(&config)?))?;
+    fs::write(
+      &config_path,
+      format!("{CONFIG_HEADER}{}", toml::to_string_pretty(&config)?),
+    )?;
 
     // Turns `.glas/` into the versioned meta-repo
     git::init(&glas_dir)?;
@@ -270,7 +296,11 @@ fn load_global() -> anyhow::Result<(HashMap<String, RawRemoteConfig>, Option<Pat
   let config: RawWorkspaceConfig = toml::from_str(&fs::read_to_string(&config_path)?)?;
   validate_config(&config)?;
 
-  let global_secrets = if secrets_path.exists() { Some(secrets_path) } else { None };
+  let global_secrets = if secrets_path.exists() {
+    Some(secrets_path)
+  } else {
+    None
+  };
   Ok((config.remotes, global_secrets))
 }
 

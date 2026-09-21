@@ -71,16 +71,18 @@ pub struct RawRemoteSecret {
 mod tests {
   use super::*;
 
+  // Empty string parses to default config with no remotes or repos
   #[test]
-  fn parse_minimal_config() {
+  fn empty_toml_parses_to_default_config() {
     let toml = "";
     let config: RawWorkspaceConfig = toml::from_str(toml).unwrap();
     assert!(config.remotes.is_empty());
     assert!(config.repo.is_empty());
   }
 
+  // Remote section with url and user parses correctly
   #[test]
-  fn parse_config_with_remote() {
+  fn remote_section_parses_url_and_user() {
     let toml = r#"
 [remotes.github]
 url = "https://github.com"
@@ -91,8 +93,9 @@ user = "myorg"
     assert_eq!(config.remotes["github"].user, "myorg");
   }
 
+  // Repo with inline primary table parses the remote name
   #[test]
-  fn parse_config_with_repo_and_primary() {
+  fn repo_with_inline_primary_parses_remote_name() {
     let toml = r#"
 [remotes.github]
 url = "https://github.com"
@@ -106,8 +109,9 @@ primary = { name = "github" }
     assert_eq!(repo.primary.as_ref().unwrap().name, "github");
   }
 
+  // Extra fields in remote section are rejected (deny_unknown_fields)
   #[test]
-  fn reject_unknown_fields_in_remote() {
+  fn unknown_field_in_remote_is_rejected() {
     let toml = r#"
 [remotes.github]
 url = "https://github.com"
@@ -117,16 +121,18 @@ extra = "bad"
     assert!(toml::from_str::<RawWorkspaceConfig>(toml).is_err());
   }
 
+  // Extra fields at root level are rejected (deny_unknown_fields)
   #[test]
-  fn reject_unknown_fields_at_root() {
+  fn unknown_field_at_root_is_rejected() {
     let toml = r#"
 unknown_key = "bad"
 "#;
     assert!(toml::from_str::<RawWorkspaceConfig>(toml).is_err());
   }
 
+  // Secrets file with token parses correctly
   #[test]
-  fn parse_secrets_file() {
+  fn secrets_file_parses_token() {
     let toml = r#"
 [remotes.github]
 token = "ghp_xxx"

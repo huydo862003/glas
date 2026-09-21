@@ -20,7 +20,11 @@ pub fn run() -> anyhow::Result<()> {
       continue;
     }
 
-    let label = if git::is_dirty(&repo.path)? { "dirty" } else { "clean" };
+    let label = if git::is_dirty(&repo.path)? {
+      "dirty"
+    } else {
+      "clean"
+    };
     logger::print_info(&format!("{}  {label}", repo.name));
   }
 
