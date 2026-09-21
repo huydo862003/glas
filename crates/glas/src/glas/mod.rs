@@ -178,35 +178,12 @@ hint: run `glas init` to create one"#
     Ok(())
   }
 
-  /// Write a remote definition and optional token to global config (~/.config/glas/)
-  pub fn write_global_remote(&self, name: &str, url: String, user: String, token: Option<String>) -> anyhow::Result<()> {
+  /// Write a token to the global secrets file (~/.config/glas/secrets.toml)
+  pub fn write_global_token(&self, remote_name: &str, token: String) -> anyhow::Result<()> {
     let Some(home) = std::env::var("HOME").ok().map(PathBuf::from) else {
       anyhow::bail!("HOME is not set");
     };
-    let dir = home.join(GLOBAL_CONFIG_SUBDIR);
-    fs::create_dir_all(&dir)?;
-
-    // Read or create global config, insert the remote
-    let config_path = dir.join(CONFIG_FILE);
-    let mut config: RawWorkspaceConfig = if config_path.exists() {
-      toml::from_str(&fs::read_to_string(&config_path)?)?
-    } else {
-      RawWorkspaceConfig::default()
-    };
-    config.remotes.insert(name.to_string(), RawRemoteConfig { url, user });
-    fs::write(&config_path, format!("{CONFIG_HEADER}{}", toml::to_string_pretty(&config)?))?;
-
-    if let Some(token) = token {
-      let secrets_path = dir.join(GLOBAL_SECRETS_FILE);
-      self.write_token_to(&secrets_path, name, token)?;
-    }
-
-    Ok(())
-  }
-
-  /// Write a token for a global remote to the workspace-local secrets file
-  pub fn write_token(&self, remote_name: &str, token: String) -> anyhow::Result<()> {
-    let path = self.root.join(GLAS_LOCAL_PATH).join("secrets.toml");
+    let path = home.join(GLOBAL_CONFIG_SUBDIR).join(GLOBAL_SECRETS_FILE);
     self.write_token_to(&path, remote_name, token)
   }
 

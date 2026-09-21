@@ -71,9 +71,6 @@ pub struct RemoteAddArgs {
   /// Auth token (optional, stored in secrets.toml)
   #[arg(long)]
   pub token: Option<String>,
-  /// Store remote and token in global config (~/.config/glas/)
-  #[arg(long)]
-  pub global: bool,
   /// Overwrite if the remote already exists
   #[arg(long)]
   pub force: bool,
