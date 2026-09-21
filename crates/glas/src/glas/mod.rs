@@ -7,8 +7,11 @@ mod resolve;
 mod types;
 mod validate;
 
+use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
+#[cfg(unix)]
+use std::os::unix::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
 
 use crate::git;
@@ -302,7 +305,7 @@ hint: run `glas init` to create one"#
 }
 
 /// Load global remotes and return the global secrets path (if the config dir exists)
-fn load_global() -> anyhow::Result<(std::collections::HashMap<String, RawRemoteConfig>, Option<PathBuf>)> {
+fn load_global() -> anyhow::Result<(HashMap<String, RawRemoteConfig>, Option<PathBuf>)> {
   let Some(home) = std::env::var("HOME").ok().map(PathBuf::from) else {
     return Ok((Default::default(), None));
   };
@@ -325,8 +328,6 @@ fn load_global() -> anyhow::Result<(std::collections::HashMap<String, RawRemoteC
 // Write secrets atomically: temp file with 0o600 then rename, so the content is never visible at the target path with wrong permissions
 #[cfg(unix)]
 fn write_secrets_file(path: &Path, content: &str) -> anyhow::Result<()> {
-  use std::os::unix::fs::OpenOptionsExt;
-
   let tmp = path.with_extension("tmp");
   fs::OpenOptions::new()
     .write(true)

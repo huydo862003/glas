@@ -48,7 +48,7 @@ pub fn run(path: Option<String>, flags: Flags) -> anyhow::Result<()> {
       std::fs::remove_file(&repo_path)?;
     }
     create_symlink(&source_path, &repo_path)?;
-    logger::print_info(&format!("symlinked {name} -> {}", source_path.display()));
+    logger::print_info(&format!("symlinked {name} to {}", source_path.display()));
   }
 
   workspace.add_repo(name.clone(), flags.contains(Flags::FORCE))?;

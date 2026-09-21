@@ -52,7 +52,7 @@ fn push_remotes(name: &str, remotes: &[GitRemote], path: &Path) -> anyhow::Resul
     remote.cred.ensure_repo_exists(&remote.user, name, true)?;
     git::check_remote_exists(path, remote.name.as_str(), &remote.url)?;
     git::push(path, remote.name.as_str(), &remote.cred)?;
-    logger::print_ok(&format!("{name} -> {}: push", remote.name));
+    logger::print_ok(&format!("{name} to {}: push", remote.name));
   }
   Ok(())
 }

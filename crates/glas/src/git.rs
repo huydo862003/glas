@@ -129,7 +129,7 @@ fn open(path: &Path) -> anyhow::Result<git2::Repository> {
     .map_err(|err| anyhow::anyhow!("not a git repository at {}: {err}", path.display()))
 }
 
-/// Credential callback chain: our token -> SSH agent -> system credential helper (GIT_ASKPASS etc.)
+/// Credential callback chain: our token, SSH agent, system credential helper (GIT_ASKPASS etc)
 fn remote_callbacks(cred: &Credential) -> git2::RemoteCallbacks<'static> {
   let token: Option<String> = cred.read().ok().map(|s| s.expose_secret().to_string());
   let mut callbacks = git2::RemoteCallbacks::new();

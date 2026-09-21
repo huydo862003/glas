@@ -50,6 +50,6 @@ fn pull_repo(name: &str, primary: &GitRemote, path: &Path, clone_if_missing: boo
 
   git::check_remote_exists(path, primary.name.as_str(), &primary.url)?;
   git::pull(path, primary.name.as_str(), &primary.cred)?;
-  logger::print_ok(&format!("{name} -> {}: pull", primary.name));
+  logger::print_ok(&format!("{name} from {}: pull", primary.name));
   Ok(())
 }

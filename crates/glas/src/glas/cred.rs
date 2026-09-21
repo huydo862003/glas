@@ -3,13 +3,13 @@
 //! Tokens are never stored in memory at rest
 //! `Credential::read` fetches fresh on each call and returns a `SecretString` that zeroes on drop
 //!
-//! Fallback order: env var -> secrets file -> git config -> provider CLI
+//! Fallback order: env var, secrets file, git config, provider CLI
 
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use secrecy::SecretString;
+use secrecy::{ExposeSecret, SecretString};
 
 use crate::glas::providers::GitProvider;
 use crate::glas::types::RawSecretsFile;
@@ -39,7 +39,6 @@ impl Credential {
     let Some(provider) = &self.provider else {
       return Ok(());
     };
-    use secrecy::ExposeSecret;
     let token = self.read()?;
     provider.ensure_repo_exists(token.expose_secret(), user, repo, private)
   }
