@@ -71,7 +71,7 @@ pub struct RemoteAddArgs {
   pub name: String,
   /// URL with user/org (e.g. https://github.com/myorg)
   pub url: String,
-  /// Auth token (stored in ~/.config/glas/secrets.toml)
+  /// Auth token, stored in ~/.config/glas/secrets.toml
   #[arg(long)]
   pub token: Option<String>,
   /// Overwrite if the remote already exists
