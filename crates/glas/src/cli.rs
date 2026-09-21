@@ -29,6 +29,9 @@ pub enum Command {
 
   /// Pull tracked repos from their primary remote
   Pull(PullArgs),
+
+  /// Show workspace overview
+  Status,
 }
 
 #[derive(clap::Args)]
@@ -68,7 +71,7 @@ pub struct RemoteAddArgs {
   pub name: String,
   /// URL with user/org (e.g. https://github.com/myorg)
   pub url: String,
-  /// Auth token (optional, stored in secrets.toml)
+  /// Auth token (stored in ~/.config/glas/secrets.toml)
   #[arg(long)]
   pub token: Option<String>,
   /// Overwrite if the remote already exists
@@ -87,8 +90,8 @@ pub enum RepoCommand {
   /// Track a repo (defaults to current directory)
   Add(RepoAddArgs),
 
-  /// Stop tracking the current directory as a repo
-  Remove,
+  /// Stop tracking a repo (defaults to current directory)
+  Remove(RepoRemoveArgs),
 
   /// List all tracked repos
   List,
@@ -96,9 +99,8 @@ pub enum RepoCommand {
   /// Show git status of all tracked repos
   Status,
 
-  /// Set repo properties
-  #[command(subcommand)]
-  Set(RepoSetCommand),
+  /// Set the primary (pull) remote for a repo
+  Primary(RepoPrimaryArgs),
 }
 
 #[derive(clap::Args)]
@@ -110,20 +112,20 @@ pub struct RepoAddArgs {
   pub force: bool,
 }
 
-#[derive(Subcommand)]
-pub enum RepoSetCommand {
-  /// Set the primary remote for the current repo
-  Primary(RepoSetPrimaryArgs),
+#[derive(clap::Args)]
+pub struct RepoRemoveArgs {
+  /// Repo name (default: current directory name)
+  pub name: Option<String>,
 }
 
 #[derive(clap::Args)]
-pub struct RepoSetPrimaryArgs {
+pub struct RepoPrimaryArgs {
   /// Remote name
   pub remote: String,
-  /// Custom repo name on this remote
+  /// Override repo name on this remote (when it differs from local name)
   #[arg(long)]
   pub repo: Option<String>,
-  /// Custom user on this remote
+  /// Override user/org on this remote (when it differs from remote default)
   #[arg(long)]
   pub user: Option<String>,
 }

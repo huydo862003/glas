@@ -21,11 +21,12 @@ glas init --meta-repo my-config   # custom meta-repo name (default: glas)
 
 # Add remotes
 glas remote add github https://github.com/myorg
-glas remote add gitlab https://gitlab.com/myorg
-glas remote add github https://github.com/myorg --token ghp_xxx
+glas remote add gitlab https://gitlab.com/myorg --token glpat_xxx
 
 # List and remove remotes
 glas remote list
+# github  https://github.com/myorg  token: set
+# gitlab  https://gitlab.com/myorg  token: not set
 glas remote remove gitlab
 
 # Track repos
@@ -33,11 +34,18 @@ cd my-repo && glas repo add
 glas repo add /path/to/external/repo   # symlinks into workspace
 
 # Set which remote a repo pulls from
-glas repo set primary github
+glas repo primary github
+
+# Untrack a repo
+glas repo remove           # current directory
+glas repo remove my-repo   # by name
 
 # List tracked repos
 glas repo list
 glas repo status
+
+# Workspace overview
+glas status
 
 # Sync all repos
 glas push

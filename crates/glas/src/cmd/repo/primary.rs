@@ -1,11 +1,11 @@
-//! glas repo set primary
-//! Set the primary remote for the current repo
+//! glas repo primary
+//! Set the primary (pull) remote for the current repo
 
-use crate::cli::RepoSetPrimaryArgs;
+use crate::cli::RepoPrimaryArgs;
 use crate::glas::Workspace;
 use crate::logger;
 
-pub fn run(args: RepoSetPrimaryArgs) -> anyhow::Result<()> {
+pub fn run(args: RepoPrimaryArgs) -> anyhow::Result<()> {
   let mut workspace = Workspace::load()?;
   let name = workspace.get_current_repo_name()?;
 

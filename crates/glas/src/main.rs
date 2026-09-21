@@ -7,7 +7,7 @@ mod types;
 
 use clap::Parser;
 
-use cli::{Cli, Command, RemoteCommand, RepoCommand, RepoSetCommand};
+use cli::{Cli, Command, RemoteCommand, RepoCommand};
 
 fn main() -> anyhow::Result<()> {
   let cli = Cli::parse();
@@ -21,15 +21,14 @@ fn main() -> anyhow::Result<()> {
     },
     Command::Repo(cmd) => match cmd {
       RepoCommand::Add(args) => cmd::repo::add::run(args)?,
-      RepoCommand::Remove => cmd::repo::rm::run()?,
+      RepoCommand::Remove(args) => cmd::repo::rm::run(args)?,
       RepoCommand::List => cmd::repo::ls::run()?,
       RepoCommand::Status => cmd::repo::status::run()?,
-      RepoCommand::Set(cmd) => match cmd {
-        RepoSetCommand::Primary(args) => cmd::repo::set::primary::run(args)?,
-      },
+      RepoCommand::Primary(args) => cmd::repo::primary::run(args)?,
     },
     Command::Push(args) => cmd::push::run(args)?,
     Command::Pull(args) => cmd::pull::run(args)?,
+    Command::Status => cmd::status::run()?,
   }
 
   Ok(())
