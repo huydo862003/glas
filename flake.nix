@@ -34,14 +34,14 @@
           cargo = rust-stable;
           rustc = rust-stable;
         };
-        git-las = rustPlatform.buildRustPackage {
-          pname = "git-las";
+        glas = rustPlatform.buildRustPackage {
+          pname = "glas";
           version = "0.1.0";
           src = ./.;
           cargoLock.lockFile = ./Cargo.lock;
           cargoBuildFlags = [
             "-p"
-            "git-las"
+            "glas"
           ];
           nativeBuildInputs = with pkgs; [ pkg-config ];
           buildInputs = with pkgs; [ openssl ];
@@ -49,8 +49,8 @@
         };
       in
       {
-        packages.git-las = git-las;
-        packages.default = git-las;
+        packages.glas = glas;
+        packages.default = glas;
 
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [

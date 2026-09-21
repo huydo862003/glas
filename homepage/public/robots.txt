@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://huydo862003.github.io/git-las/sitemap.xml
+Sitemap: https://huydo862003.github.io/glas/sitemap.xml

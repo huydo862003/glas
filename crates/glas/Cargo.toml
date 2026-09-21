@@ -1,0 +1,24 @@
+[package]
+name = "glas"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+description = "Sync git repos across multiple providers"
+
+[[bin]]
+name = "glas"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.104"
+bitflags = "2"
+clap = { version = "4.6.6", features = ["derive"] }
+git2 = "0.20"
+indicatif = "0.18.6"
+owo-colors = "4.4.0"
+secrecy = "0.10"
+serde = { version = "1.0.229", features = ["derive"] }
+toml = "1.1.6"
+serde_yaml = "0.9"
+serde_json = "1"
+reqwest = { version = "0.12", features = ["blocking", "json"] }

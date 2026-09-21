@@ -12,6 +12,6 @@
   <!-- Junction node -->
   <circle cx="600" cy="250" r="18" fill="#4a9eff" />
   <!-- Title -->
-  <text x="600" y="510" text-anchor="middle" font-family="monospace" font-size="72" font-weight="bold" fill="white">git-las</text>
+  <text x="600" y="510" text-anchor="middle" font-family="monospace" font-size="72" font-weight="bold" fill="white">glas</text>
   <text x="600" y="570" text-anchor="middle" font-family="monospace" font-size="24" fill="#8b949e">sync git repos across multiple providers</text>
 </svg>
