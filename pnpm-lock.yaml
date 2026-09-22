@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       typerighter:
-        specifier: 0.30.6
-        version: 0.30.6(jiti@2.7.0)
+        specifier: 0.38.1
+        version: 0.38.1(jiti@2.7.0)
 
   homepage: {}
 
@@ -55,8 +55,8 @@ packages:
     peerDependencies:
       vue: '>=3.3.0'
 
-  '@fontsource-variable/archivo@5.3.0':
-    resolution: {integrity: sha512-HogK8FJelrD1o7TlZlkIVtHgc20bO5PZRWE7mUeUTdMN055alznQV6/00J00IBeu8FQAH4s3zW9UJNvKExXf+g==}
+  '@fontsource-variable/inter@5.3.0':
+    resolution: {integrity: sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==}
 
   '@fontsource-variable/jetbrains-mono@5.3.0':
     resolution: {integrity: sha512-F32xpS2NsGYoQi2ADSkKTgpJj7ozajsGgDJ8woTnqjmIB+dxDIqImjl4pXZVEExu8UFZ2ndhmX18EBS/hdz3Lw==}
@@ -313,11 +313,11 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@typerighter/rpc-client@0.30.6':
-    resolution: {integrity: sha512-gkC2D78ws/mP9++hNb82GfO0Gy7iVZtg/bPxqhXfxgfmGZCMB6pqeHsQ3fPF4tKTR8xCcW81Zok6FEaCC0QSbA==}
+  '@typerighter/rpc-client@0.38.1':
+    resolution: {integrity: sha512-ricexzGeI47gVPnQOKY5QNdQTLYbdnrPw2pMLn+IzJzN/k/6vrZ3UAAZwqcH8T0GsxbGXcwAX5u7Fa03XESDog==}
 
-  '@typerighter/rpc-server@0.30.6':
-    resolution: {integrity: sha512-YH2BR6Q6ELt8brCSpj5tXZBri2nLZWm3H3mq+VuzV+GCreLgq4goUB9qkE4LPB6yKGVAMiYgtDc8oy0QfOk23A==}
+  '@typerighter/rpc-server@0.38.1':
+    resolution: {integrity: sha512-twtzLtvixA4GukxWmFRpAXe6mp6pLP9XsBUEcW9G7mHLnXjefv8vFsVVEAfArCN6qRinM2WVdrmjrCsvKFN1Lg==}
 
   '@types/hast@3.0.5':
     resolution: {integrity: sha512-rp/ezSWaD1m44dPKICGhiskI13nVr7qTloFwDa/IYkhhf5nzwP+zIQcIJh3WIFSBOy/H1PzB40jPjMDksN4F+g==}
@@ -395,8 +395,8 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
-  dotenv@16.6.1:
-    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+  dotenv@17.4.2:
+    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
     engines: {node: '>=12'}
 
   enhanced-resolve@5.24.5:
@@ -695,8 +695,8 @@ packages:
   trim-lines@3.0.1:
     resolution: {integrity: sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg==}
 
-  typerighter@0.30.6:
-    resolution: {integrity: sha512-+QdZRA8qyhQWfak24BglCWaptwf1exdze4FueF5ATWjrG8Rjk0ZYynqdi958/Ym72T1P8cjkZyoO/zGyhruLxQ==}
+  typerighter@0.38.1:
+    resolution: {integrity: sha512-q6PEMPm2yevmzhhdPm56gO3riSTLUUeTZRTQkOrdhLjIM6PvJCNZzOuPu/TzJB6sEkwU1QzAQHFZ+I+vbdhpnA==}
     hasBin: true
 
   unist-util-is@6.0.1:
@@ -818,7 +818,7 @@ snapshots:
       '@floating-ui/utils': 0.2.12
       vue: 3.5.42
 
-  '@fontsource-variable/archivo@5.3.0': {}
+  '@fontsource-variable/inter@5.3.0': {}
 
   '@fontsource-variable/jetbrains-mono@5.3.0': {}
 
@@ -1007,11 +1007,11 @@ snapshots:
       tailwindcss: 4.3.3
       vite: 8.3.0(jiti@2.7.0)
 
-  '@typerighter/rpc-client@0.30.6': {}
+  '@typerighter/rpc-client@0.38.1': {}
 
-  '@typerighter/rpc-server@0.30.6':
+  '@typerighter/rpc-server@0.38.1':
     dependencies:
-      dotenv: 16.6.1
+      dotenv: 17.4.2
 
   '@types/hast@3.0.5':
     dependencies:
@@ -1105,7 +1105,7 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  dotenv@16.6.1: {}
+  dotenv@17.4.2: {}
 
   enhanced-resolve@5.24.5:
     dependencies:
@@ -1378,17 +1378,17 @@ snapshots:
 
   trim-lines@3.0.1: {}
 
-  typerighter@0.30.6(jiti@2.7.0):
+  typerighter@0.38.1(jiti@2.7.0):
     dependencies:
       '@clack/prompts': 1.8.0
       '@floating-ui/vue': 2.0.1(vue@3.5.42)
-      '@fontsource-variable/archivo': 5.3.0
+      '@fontsource-variable/inter': 5.3.0
       '@fontsource-variable/jetbrains-mono': 5.3.0
       '@lucide/vue': 1.45.0(vue@3.5.42)
       '@shikijs/transformers': 4.4.3
       '@tailwindcss/vite': 4.3.3(vite@8.3.0(jiti@2.7.0))
-      '@typerighter/rpc-client': 0.30.6
-      '@typerighter/rpc-server': 0.30.6
+      '@typerighter/rpc-client': 0.38.1
+      '@typerighter/rpc-server': 0.38.1
       '@vitejs/plugin-vue': 6.0.8(vite@8.3.0(jiti@2.7.0))(vue@3.5.42)
       cac: 7.0.0
       picocolors: 1.1.1
